@@ -1,9 +1,48 @@
 import axios from "axios"
 
-export const findAll = () => {
-
-    return axios.get("http://localhost:3000/users")
-        .then(response => response.data)
-        .catch(error => console.log(error))
-
+const BASE_URL = "http://localhost:8080/users";
+export const  findAll = async() => {
+    try {
+        const response = await axios.get(BASE_URL);
+        console.log(response);
+        return response;
+    } catch (error) {
+        console.log(error);
+    }
+    return null;  
 }
+
+export const save =async({username, password, email}) => {
+    try {
+        return await axios.post(BASE_URL, {
+            username,
+            password,
+            email
+        });
+    } catch (error) {
+        console.log(error);
+    }
+    return undefined;
+}
+
+export const update = async({id, username, email}) => {
+    try {
+        return await axios.put(`${BASE_URL}/${id}`, {
+            username,
+            email
+        });
+    } catch (error) {
+        console.log(error);
+    }
+    return undefined;
+}
+
+export const remove = async(id) => {
+    try {
+        return await axios.delete(`${BASE_URL}/${id}`);
+    } catch (error) {
+        console.log(error);
+    }
+    return undefined;   
+}
+
