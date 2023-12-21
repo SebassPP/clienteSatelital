@@ -1,8 +1,9 @@
-import { useReducer, useState } from "react";
+import { useContext, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { usersReducer } from "../reducers/usersReducer";
 import { findAll, remove, save, update } from "../services/userService";
+import { AuthContext } from "../auth/context/AuthContext";
 
 const initialUsers = [];
 
@@ -24,6 +25,7 @@ export const useUsers = () => {
     const [visibleForm, setVisibleForm] = useState(false);
     const[errors, setErrors] = useState(initialErrors);
     const navigate = useNavigate();
+    const {login, handlerLogout} = useContext(AuthContext);
 
     const getUsers = async() => {
         const result = await findAll();
@@ -34,7 +36,8 @@ export const useUsers = () => {
     }
 
     const handlerAddUser = async(user) => {
-        
+        //Si el usuario no es admin no puede crear usuarios
+        if (!login.role === "ROLE_ADMIN") return;
         let response;
 
         try {
@@ -64,7 +67,10 @@ export const useUsers = () => {
         } catch (error) {
                 if (error.response && error.response.status === 400 ){
                     setErrors(error.response.data);
-                } else{
+                } else if(error.response?.status == 401){
+                    handlerLogout();
+                }
+                else{
                     throw error;
                 }
             } 
@@ -73,6 +79,8 @@ export const useUsers = () => {
 
     const handlerRemoveUser = (id) => {
 
+        //Si el usuario no es admin no puede eliminar usuarios
+        if (!login.role === "ROLE_ADMIN") return;
         Swal.fire({
             title: 'Esta seguro que desea eliminar?',
             text: "Cuidado el usuario sera eliminado!",
@@ -81,18 +89,27 @@ export const useUsers = () => {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Si, eliminar!'
-        }).then((result) => {
+        }).then(async(result) => {
             if (result.isConfirmed) {
-                remove(id);
-                dispatch({
+
+                try {
+                    await remove(id);
+                    dispatch({
                     type: 'removeUser',
                     payload: id,
                 });
-                Swal.fire(
+                    Swal.fire(
                     'Usuario Eliminado!',
                     'El usuario ha sido eliminado con exito!',
                     'success'
                 )
+                    
+                } catch (error) {
+                    if(error.response?.status == 401){
+                        handlerLogout();
+                    }
+                }
+                
             }
         })
 

@@ -5,10 +5,11 @@ import { AuthContext } from "../../auth/context/AuthContext";
 export const Navbar = () => {
 
     const { login, handlerLogout } = useContext(AuthContext);
+
     return (
         <nav className="navbar navbar-expand-lg bg-body-tertiary">
             <div className="container-fluid">
-                <a className="navbar-brand" href="#">Satelital 2.0 by BO-TECH</a>
+                <a className="navbar-brand" href="#">BO-TECH Seguimiento</a>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
                 </button>
@@ -20,11 +21,14 @@ export const Navbar = () => {
                                 Usuarios
                             </NavLink>
                         </li>
-                        <li className="nav-item">
-                            <NavLink className="nav-link" to="/vehiculos">
-                                Vehiculos
-                            </NavLink>
-                        </li>
+                        {/* Si no es admin no puede ver vehiculos */}
+                        {!(login.role === "ROLE_ADMIN") || 
+                            <li className="nav-item">
+                                <NavLink className="nav-link" to="/vehiculos">
+                                    Vehiculos
+                                </NavLink>
+                            </li>}
+                        
 
                     </ul>
                 </div>
