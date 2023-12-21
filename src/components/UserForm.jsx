@@ -7,7 +7,7 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
     
     const [userForm, setUserForm] = useState(initialUserForm);
 
-    const { id, username, password, email } = userForm;
+    const { id, username, password, email, role } = userForm;
 
     useEffect(() => {
         setUserForm({
@@ -26,26 +26,6 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        /*if (!username || (!password && id === 0) || !email) {
-            Swal.fire(
-                'Error de validacion',
-                'Debe completar los campos del formulario!',
-                'error'
-            );
-
-            return;
-        }
-        if (!email.includes('@')) {
-            Swal.fire(
-                'Error de validacion email',
-                'El email debe ser valido, incluir un @!',
-                'error'
-            );
-            return;
-        }
-        // console.log(userForm);*/
-
-        // guardar el user form en el listado de usuarios
         handlerAddUser(userForm);
     }
 
@@ -79,6 +59,14 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
                 value={email}
                 onChange={onInputChange} />
             <p className="text-danger">{errors?.email}</p>
+            <input
+                className="form-control my-3 w-75"
+                placeholder="Rol"
+                name="role"
+                value={role}
+                onChange={onInputChange} />
+            <p className="text-danger">{errors?.role}</p>
+
             <input type="hidden"
                 name="id"
                 value={id} />

@@ -12,11 +12,13 @@ const initialUserForm = {
     username: '',
     password: '',
     email: '',
+    role: '',
 }
 const initialErrors = {
     username: '',
     password: '',
     email: '',
+    role: '',
 }
 
 export const useUsers = () => {

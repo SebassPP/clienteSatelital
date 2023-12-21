@@ -23,23 +23,25 @@ export const  findAll = async() => {
     return null;  
 }
 
-export const save =async({username, password, email}) => {
+export const save =async({username, password, email, role}) => {
     try {
         return await axios.post(BASE_URL, {
             username,
             password,
-            email
+            email,
+            role,
         },config());
     } catch (error) {
         throw error;
     }
 }
 
-export const update = async({id, username, email}) => {
+export const update = async({id, username, email,role}) => {
     try {
         return await axios.put(`${BASE_URL}/${id}`, {
             username,
             email,
+            role
         },config());
     } catch (error) {
         throw error;
