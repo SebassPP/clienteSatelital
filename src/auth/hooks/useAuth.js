@@ -6,41 +6,43 @@ import { loginUser } from "../services/authService";
 
 const initialLogin = JSON.parse(sessionStorage.getItem('login')) || {
     isAuth: false,
-    role: undefined,
+    isAdmin:false,
     user: undefined,
+    role: undefined,
 }
 export const useAuth = () => {
 
     const [login, dispatch] = useReducer(loginReducer, initialLogin);
     const navigate = useNavigate();
 
-    const handlerLogin = async ({ username, password }) => {
-        
-        
+    const handlerLogin = async({ username, password }) => {
+       
         try {
             const response = await loginUser({ username, password });
             const token = response.data.token;
-            const claims = JSON.parse(window.atob(token.split('.')[1])) ;
-            const user = { username: claims.username }
+            const claims = JSON.parse(window.atob(token.split('.')[1]));//decodificamos y obtenemos el payload que esta en el 1
+            console.log(claims);//convertir JSON STring a JSON
+            const user = { username: response.data.username }
             dispatch({
                 type: 'login',
-                payload: {user,role: claims.role},
+                //Agregar user, isAdmin y role a el payload
+                payload: {user, isAdmin: claims.isAdmin, role: claims.role},
             });
             sessionStorage.setItem('login', JSON.stringify({
                 isAuth: true,
-                role: claims.role,
+                isAdmin: claims.isAdmin,
                 user,
+                role: claims.role,
             }));
+            //Guardar token en sessionStorage
             sessionStorage.setItem('token',`Bearer ${token}`);
             navigate('/users');
-        } catch (error){
-            if(error.response.status === 401){
+        } catch (error) {
+            if (error.response?.status === 401){
                 Swal.fire('Error Login', 'Username o password invalidos', 'error');
-            }else if(error.response.status === 403){
-                Swal.fire('Error Login', 'Usuario no autorizado', 'error');
-            }else if(error.response.status === 404){
-
-            }else {
+            }else if (error.response?.status === 403){
+                Swal.fire('Error Login', 'No tiene acceso al recurso o permisos', 'error');
+            }else{
                 throw error;
             }
             
